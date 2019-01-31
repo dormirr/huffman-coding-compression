@@ -1,0 +1,30 @@
+Generally speaking, the process of decompression is simply a matter of translating the stream of prefix codes to individual byte values, usually by traversing the Huffman tree node by node as each bit is read from the input stream (reaching a leaf node necessarily terminates the search for that particular byte value).
+一般来说,减压的过程是简单的翻译的前缀编码单个字节值,通常通过遍历哈夫曼树节点通过节点为每一位从输入流中读取(到达一个叶子节点一定终止搜索特定字节值)。
+Before this can take place, however, the Huffman tree must be somehow reconstructed.
+然而，在此之前，霍夫曼树必须以某种方式重新构建。
+In the simplest case, where character frequencies are fairly predictable, the tree can be preconstructed (and even statistically adjusted on each compression cycle) and thus reused every time, at the expense of at least some measure of compression efficiency.
+在最简单的情况下，在字符频率相当可预测的情况下，可以预先构造树(甚至对每个压缩周期进行统计调整)，因此每次都重用树，代价是至少牺牲一些压缩效率的度量。
+Otherwise, the information to reconstruct the tree must be sent a priori.
+否则，重构树的信息必须事先发送。
+A naive approach might be to prepend the frequency count of each character to the compression stream.
+一种幼稚的方法可能是将每个字符的频率计数前置到压缩流中。
+Unfortunately, the overhead in such a case could amount to several kilobytes, so this method has little practical use.
+不幸的是，这种情况下的开销可能会达到几千字节，因此这种方法几乎没有实际用途。
+If the data is compressed using canonical encoding, the compression model can be precisely reconstructed with just B2B bits of information (where {\displaystyle B} B is the number of bits per symbol).
+如果使用规范编码来压缩数据，那么可以用B2B的信息来精确地重构压缩模型({\displaystyle B} B是每个符号的比特数)。
+Another method is to simply prepend the Huffman tree, bit by bit, to the output stream.
+另一种方法是将Huffman树逐点地提前到输出流。
+For example, assuming that the value of 0 represents a parent node and 1 a leaf node, whenever the latter is encountered the tree building routine simply reads the next 8 bits to determine the character value of that particular leaf.
+例如，假设0的值表示父节点，1表示叶节点，每当遇到树构建例程时，只需要读取下8位以确定特定叶子的字符值。
+The process continues recursively until the last leaf node is reached;
+这个过程递归地继续，直到到达最后一个叶子节点;
+at that point, the Huffman tree will thus be faithfully reconstructed.
+到那时，赫夫曼树将被忠实地重建。
+The overhead using such a method ranges from roughly 2 to 320 bytes (assuming an 8-bit alphabet).
+使用这种方法的开销大约为2到320字节(假设一个8位字母)。
+Many other techniques are possible as well.
+许多其他的技术也是可能的。
+In any case, since the compressed data can include unused "trailing bits" the decompressor must be able to determine when to stop producing output.
+在任何情况下，由于压缩数据可以包括未使用的“尾随位”，解压器必须能够确定何时停止产生输出。
+This can be accomplished by either transmitting the length of the decompressed data along with the compression model or by defining a special code symbol to signify the end of input (the latter method can adversely affect code length optimality, however).
+这可以通过与压缩模型一起传输解压缩数据的长度或者通过定义一个特殊的代码符号来表示输入的结束来实现(然而，后一种方法可能会对代码长度最优性产生负面影响)。
